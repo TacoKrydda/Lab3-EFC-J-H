@@ -1,0 +1,2 @@
+I SSMS behöver man göra en pk som heter Id i music.playlist_track
+Scaffold-DbContext -Provider Microsoft.EntityFrameworkCore.SqlServer -Connection "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=everyloop;Integrated Security=True" -DataAnnotations -ContextDir Data -OutputDir Models -Tables music.albums,music.artists,music.genres,music.media_types,music.playlist_track, music.playlists,music.tracks

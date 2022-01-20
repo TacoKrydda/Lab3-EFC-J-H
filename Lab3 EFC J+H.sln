@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab3 EFC J+H", "Lab3 EFC J+H\Lab3 EFC J+H.csproj", "{8210C1C5-CF52-41BB-97CD-C824D6BE2C12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8210C1C5-CF52-41BB-97CD-C824D6BE2C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8210C1C5-CF52-41BB-97CD-C824D6BE2C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8210C1C5-CF52-41BB-97CD-C824D6BE2C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8210C1C5-CF52-41BB-97CD-C824D6BE2C12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E0545F38-627D-4B64-8D44-7EF41C8C627A}
+	EndGlobalSection
+EndGlobal
