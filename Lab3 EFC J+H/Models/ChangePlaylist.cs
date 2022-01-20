@@ -12,7 +12,8 @@ namespace Lab3_EFC_J_H.Models
         #region Menu
         public int textMenu()
         {
-            Console.WriteLine("1. New playlist\n2. Add track to playlist\n3. Remove playlist\n4. Remove track from playlist\n5. close program");
+            Console.WriteLine("1. New playlist\n2. Add track to playlist\n3. Remove playlist\n" +
+                "4. Remove track from playlist\n5. Search artists\n6. close program");
             bool isValid = int.TryParse(Console.ReadLine(), out int userInput);
             if (isValid)
             {
@@ -53,6 +54,10 @@ namespace Lab3_EFC_J_H.Models
                         RemoveTrackFromPlaylist(removeResult.Item1, removeResult.Item2);
                         break;
                     case 5:
+                        var searchResult = sortBy();
+                        ReadFromDb(searchResult);
+                        break;
+                    case 6:
                         Environment.Exit(0);
                         break;
                     default:
@@ -207,6 +212,27 @@ namespace Lab3_EFC_J_H.Models
             {
                 return (-1, -1);
             }
+        }
+
+        public string sortBy()
+        {
+            Console.WriteLine("Enter the artists first letter(s)");
+            var userInput = Console.ReadLine();
+            return userInput;
+        }
+        public void ReadFromDb(string searchWord)
+        {
+            using (var context = new everyloopContext())
+            {
+                var group = context.Artists
+                .Where(p => p.Name.StartsWith(searchWord)).ToList();
+
+                foreach (var artist in group)
+                {
+                    Console.WriteLine($"{artist.ArtistId} = {artist.Name}");
+                }
+            }
+                
         }
     }
 }
