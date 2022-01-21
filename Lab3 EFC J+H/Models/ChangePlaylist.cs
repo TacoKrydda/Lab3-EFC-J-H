@@ -13,7 +13,7 @@ namespace Lab3_EFC_J_H.Models
         public int textMenu()
         {
             Console.WriteLine("1. New playlist\n2. Add track to playlist\n3. Remove playlist\n" +
-                "4. Remove track from playlist\n5. Search artists\n6. close program");
+                "4. Remove track from playlist\n5. Search artists\n6. Search for playlist\n7. close program");
             bool isValid = int.TryParse(Console.ReadLine(), out int userInput);
             if (isValid)
             {
@@ -54,10 +54,14 @@ namespace Lab3_EFC_J_H.Models
                         RemoveTrackFromPlaylist(removeResult.Item1, removeResult.Item2);
                         break;
                     case 5:
-                        var searchResult = sortBy();
-                        ReadFromDb(searchResult);
+                        var searchResult = searchArtists();
+                        readFromDbForArtists(searchResult);
                         break;
                     case 6:
+                        var playlistResult = searchPlaylist();
+                        readFromDbForPlaylist(playlistResult);
+                        break;
+                    case 7:
                         Environment.Exit(0);
                         break;
                     default:
@@ -214,13 +218,13 @@ namespace Lab3_EFC_J_H.Models
             }
         }
 
-        public string sortBy()
+        public string searchArtists()
         {
             Console.WriteLine("Enter the artists first letter(s)");
             var userInput = Console.ReadLine();
             return userInput;
         }
-        public void ReadFromDb(string searchWord)
+        public void readFromDbForArtists(string searchWord)
         {
             using (var context = new everyloopContext())
             {
@@ -231,8 +235,28 @@ namespace Lab3_EFC_J_H.Models
                 {
                     Console.WriteLine($"{artist.ArtistId} = {artist.Name}");
                 }
+            }     
+        }
+
+        public string searchPlaylist()
+        {
+            Console.WriteLine("Enter the playlist first letter(s)");
+            var userInput = Console.ReadLine();
+            return userInput;
+        }
+
+        public void readFromDbForPlaylist(string searchWord)
+        {
+            using (var context = new everyloopContext())
+            {
+                var group = context.Playlists
+                .Where(p => p.Name.StartsWith(searchWord)).ToList();
+
+                foreach (var artist in group)
+                {
+                    Console.WriteLine($"{artist.PlaylistId} = {artist.Name}");
+                }
             }
-                
         }
     }
 }
