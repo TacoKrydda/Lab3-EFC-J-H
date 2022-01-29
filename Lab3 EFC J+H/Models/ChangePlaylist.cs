@@ -9,74 +9,6 @@ namespace Lab3_EFC_J_H.Models
 {
     public class ChangePlaylist
     {
-        #region Menu
-        public int textMenu()
-        {
-            Console.WriteLine("1. New playlist\n2. Add track to playlist\n3. Remove playlist\n" +
-                "4. Remove track from playlist\n5. Search artists\n6. Search for playlist\n7. close program");
-            bool isValid = int.TryParse(Console.ReadLine(), out int userInput);
-            if (isValid)
-            {
-                return userInput;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        public void menu()
-        {
-            var loop = true;
-            while (loop)
-            {
-                Console.Clear();
-                var userInput = textMenu();
-                switch (userInput)
-                {
-                    case -1:
-                        Console.WriteLine("Invalid data");
-                        break;
-                    case 1:
-                        var newPlayListId = newPlaylistId();
-                        var newPlayListName = newPlaylistName();
-                        NewPlaylist(newPlayListId, newPlayListName);
-                        break;
-                    case 2:
-                        var addResult = plIdAndTrackId();
-                        AddTrackToPlaylist(addResult.Item1, addResult.Item2);
-                        break;
-                    case 3:
-                        var plId = PlaylistIdRemove();
-                        RemovePlaylst(plId);
-                        break;
-                    case 4:
-                        var removeResult = plIdAndTrackId();
-                        RemoveTrackFromPlaylist(removeResult.Item1, removeResult.Item2);
-                        break;
-                    case 5:
-                        var searchResult = searchArtists();
-                        readFromDbForArtists(searchResult);
-                        break;
-                    case 6:
-                        var playlistResult = searchPlaylist();
-                        readFromDbForPlaylist(playlistResult);
-                        break;
-                    case 7:
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        break;
-                }
-                Console.WriteLine("Press any key to continue");
-                Console.ReadKey();
-            }
-        }
-        public void returnToMenu()
-        {
-            menu();
-        }
-        #endregion
-
         #region 1. New playlist
         public int newPlaylistId()
         {
@@ -91,9 +23,7 @@ namespace Lab3_EFC_J_H.Models
                 }
                 else
                 {
-                    Console.WriteLine("Id is already taken or invalid data\nPress any key to continue");
-                    Console.ReadKey();
-                    menu();
+                    Console.WriteLine("Id is already taken or invalid data");
                     return -1;
                 }
             }
@@ -104,25 +34,22 @@ namespace Lab3_EFC_J_H.Models
             var playlistName = Console.ReadLine();
             return playlistName.ToString();
         }
-        public void NewPlaylist(int playlistId, string playlistName)
+        public void AddNewPlaylist(int playlistId, string playlistName)
         {
             using (var context = new everyloopContext())
             {
-                //if (playlistId == -1)
-                //{
-                //    Console.WriteLine("Id is already taken or invalid data");
-                //    Console.WriteLine("Press any key to continue");
-                //    Console.ReadKey();
-                //    menu();
-                //}
-                //else
-                //{
                 context.Playlists.Add(new Playlist() { PlaylistId = playlistId, Name = playlistName });
                 context.SaveChanges();
-                //}
-
             }
-
+        }
+        public void RunAddNewPlaylist()
+        {
+            var newPlayListId = newPlaylistId();
+            if (newPlayListId != -1)
+            {
+                var newPlayListName = newPlaylistName();
+                AddNewPlaylist(newPlayListId, newPlayListName);
+            }
         }
         #endregion
 
@@ -144,6 +71,19 @@ namespace Lab3_EFC_J_H.Models
                 }
             }
         }
+        public void RunAddTrackToPlaylist()
+        {
+            var playlistId = SearchPlaylistId();
+            var trackId = SearchTrackId();
+            if (playlistId != -1)
+            {
+                if (trackId != -1)
+                {
+                    AddTrackToPlaylist(playlistId, playlistId);
+                }
+            }
+        }
+        
         #endregion
 
         #region 3. Remove playlist
@@ -153,7 +93,7 @@ namespace Lab3_EFC_J_H.Models
             _ = int.TryParse(Console.ReadLine(), out int id);
             return id;
         }
-        public void RemovePlaylst(int id)
+        public void RemovePlaylist(int id)
         {
             using (var context = new everyloopContext())
             {
@@ -162,14 +102,24 @@ namespace Lab3_EFC_J_H.Models
                 {
                     context.PlaylistTracks.Remove(trackInPlaylist);
                 }
+                else
+                {
+                    Console.WriteLine("Couldn't find playlist id");
+                }
 
                 var playlist = context.Playlists.Where(p => p.PlaylistId == id).FirstOrDefault();
                 if (playlist != null)
                 {
-                    context.Playlists.Remove(playlist);
+                    context.Playlists.Remove(playlist);context.SaveChanges();
                 }
                 context.SaveChanges();
             }
+        }
+
+        public void RunRemovePlaylist()
+        {
+            var plId = PlaylistIdRemove();
+            RemovePlaylist(plId);
         }
         #endregion
 
@@ -188,75 +138,70 @@ namespace Lab3_EFC_J_H.Models
                     context.PlaylistTracks.Remove(track);
                     context.SaveChanges();
                 }
-                else
-                {
-                    Console.WriteLine("Something wrong happened");
-                    Console.WriteLine("Press any key to continue");
-                    Console.ReadKey();
-                    menu();
-                }
-
             }
-
+        }
+        public void RunRemoveTrackFromPlaylist()
+        {
+            var playlistId = SearchPlaylistId();
+            if (playlistId != -1)
+            {
+                var trackId = SearchTrackId();
+                if (trackId != -1)
+                {
+                    RemoveTrackFromPlaylist(playlistId, trackId);
+                }
+                Console.WriteLine("Something wrong happened");
+            }
+            else if (playlistId == -1)
+            {
+                Console.WriteLine("Something wrong happened");
+            }
+            
         }
         #endregion
 
-        // Method used to return 2 value (playlist id, track id)
-        public (int, int) plIdAndTrackId()
+        public static int SearchPlaylistId()
         {
             Console.WriteLine("Enter playlist id");
             bool plIdIsValid = int.TryParse(Console.ReadLine(), out int plId);
-            Console.WriteLine("Enter track id");
-            bool trackIdIsValid = int.TryParse(Console.ReadLine(), out int trackId);
-            if (plIdIsValid && trackIdIsValid && plId > 0 || trackId > 0)
+            if (plIdIsValid &&  plId >= 0)
             {
-                return (plId, trackId);
+                return plId;
             }
             else
             {
-                return (-1, -1);
+                return -1;
+            }
+        }
+        public static int SearchTrackId()
+        {
+            Console.WriteLine("Enter track id");
+            bool trackIdIsValid = int.TryParse(Console.ReadLine(), out int trackId);
+            if (trackIdIsValid && trackId >= 0)
+            {
+                return trackId;
+            }
+            else
+            {
+                return -1;
             }
         }
 
-        public string searchArtists()
-        {
-            Console.WriteLine("Enter the artists first letter(s)");
-            var userInput = Console.ReadLine();
-            return userInput;
-        }
-        public void readFromDbForArtists(string searchWord)
-        {
-            using (var context = new everyloopContext())
-            {
-                var group = context.Artists
-                .Where(p => p.Name.StartsWith(searchWord)).ToList();
-
-                foreach (var artist in group)
-                {
-                    Console.WriteLine($"{artist.ArtistId} = {artist.Name}");
-                }
-            }     
-        }
-
-        public string searchPlaylist()
-        {
-            Console.WriteLine("Enter the playlist first letter(s)");
-            var userInput = Console.ReadLine();
-            return userInput;
-        }
-
-        public void readFromDbForPlaylist(string searchWord)
-        {
-            using (var context = new everyloopContext())
-            {
-                var group = context.Playlists
-                .Where(p => p.Name.StartsWith(searchWord)).ToList();
-
-                foreach (var artist in group)
-                {
-                    Console.WriteLine($"{artist.PlaylistId} = {artist.Name}");
-                }
-            }
-        }
+        //// Method used to return 2 value (playlist id, track id)
+        //public (int, int) plIdAndTrackId()
+        //{
+        //    Console.WriteLine("Enter playlist id");
+        //    bool plIdIsValid = int.TryParse(Console.ReadLine(), out int plId);
+        //    Console.WriteLine("Enter track id");
+        //    bool trackIdIsValid = int.TryParse(Console.ReadLine(), out int trackId);
+        //    if (plIdIsValid && trackIdIsValid && plId > 0 || trackId > 0)
+        //    {
+        //        return (plId, trackId);
+        //    }
+        //    else
+        //    {
+        //        return (-1, -1);
+        //    }
+        //}
     }
 }
